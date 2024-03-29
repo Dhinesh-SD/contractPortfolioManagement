@@ -9,20 +9,19 @@ Public Enum PageContractsLocation
 End Enum
 
 Sub turnonevents()
-    Dim settings As New ExclClsSettings
+    Dim Settings As New ExclClsSettings
     
-    settings.TurnOn
+    Settings.TurnOn
 
 End Sub
 Sub openContractEdit()
 
-
-    Dim settings As New ExclClsSettings
+    Dim Settings As New ExclClsSettings
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''Turn off excel Functionality to speedup the procedure
     
-    settings.TurnOn
+    Settings.TurnOn
     
-    settings.TurnOff
+    'Settings.TurnOff
     
  ''''''''''''''''''''''Procedure to read the corresponding Contract Data and Display it in Userform
     
@@ -70,6 +69,8 @@ Sub openContractEdit()
         
     
     Next i
+    
+    EditContracts2.Show vbModeless
             
  ''''''''''''''''''''''Set the list of inputs for Linked Contracts field
     With EditContracts2
@@ -88,7 +89,7 @@ Sub openContractEdit()
             
             addNewContract
             
-            settings.Restore
+            Settings.Restore
             
             Exit Sub
         
@@ -98,7 +99,7 @@ Sub openContractEdit()
         
         If Sheet16.Cells(pg_TableFirstrow, pg_TableFirstCol).Value = "" Or ActiveCell.row > ws.Cells(pg_TableFirstrow - 1, pg_TableFirstCol).End(xlDown).row Or ActiveCell.row < pg_TableFirstrow Then
             
-            settings.Restore
+            Settings.Restore
             
             Exit Sub
         
@@ -135,10 +136,6 @@ Sub openContractEdit()
  ''''''''''''''''''''''If the type of control is "TextBox" or "ComboBox" we need to invoke the "Value" Property
                         
                         columnNum = Val(Mid(cntrls.name, InStrRev(cntrls.name, "_") + 1))
-                        
-                        
- ''''''''''''''''''''''Debug.Print cntrls.Value
-                        
                         
                         On Error Resume Next
                         
@@ -232,15 +229,15 @@ Sub openContractEdit()
             
             row = 0
             
-            Dim Obj As Object, rootFolder As String, contractFolder
+            Dim obj As Object, rootFolder As String, contractFolder
 
             rootFolder = Replace(ThisWorkbook.FullName, ThisWorkbook.name, "PCO Contract Files")
             
-            Set Obj = CreateObject("Scripting.fileSystemObject")
+            Set obj = CreateObject("Scripting.fileSystemObject")
             
-            If Not Obj.FolderExists(rootFolder) Then
+            If Not obj.FolderExists(rootFolder) Then
             
-                Obj.CreateFolder (rootFolder)
+                obj.CreateFolder (rootFolder)
             
             End If
                     
@@ -257,7 +254,7 @@ Sub openContractEdit()
                 
                     If .Field_4.Value = Left(FSOFile.name, Len(.Field_4.Value)) And .Field_4.Value <> "" Then
                     
-                        If Obj.FolderExists(contractFolder) Then
+                        If obj.FolderExists(contractFolder) Then
                         
                             subStrFile = Dir(rootFolder & "\" & FSOFile.name & "\")
                             
@@ -265,7 +262,7 @@ Sub openContractEdit()
                             
  ''''''''''''''''''''''Debug.Print FSOFile.name
                                 
-                                If Not Obj.FileExists(contractFolder & "\" & subStrFile) Then
+                                If Not obj.FileExists(contractFolder & "\" & subStrFile) Then
                                 
                                     Name rootFolder & "\" & FSOFile.name & "\" & subStrFile As contractFolder & "\" & subStrFile
                                 Else
@@ -300,15 +297,15 @@ Sub openContractEdit()
             
             
                 
-            If Not Obj.FolderExists(Replace(contractFolder, "/", "")) Then
+            If Not obj.FolderExists(Replace(contractFolder, "/", "")) Then
                 
-                Obj.CreateFolder (Replace(contractFolder, "/", ""))
+                obj.CreateFolder (Replace(contractFolder, "/", ""))
             
             End If
                         
             contractFolder = Replace(contractFolder, "/", "")
                      
-            If contractFolder <> "" And Obj.FolderExists(contractFolder & "\") Then
+            If contractFolder <> "" And obj.FolderExists(contractFolder & "\") Then
             
  ''''''''''''''''''''''.Btn_ChangeDirectory.Visible = True
                 
@@ -324,7 +321,7 @@ Sub openContractEdit()
                                 
             End If
                         
-            Set Obj = Nothing
+            Set obj = Nothing
                         
             Tsd = sh.Cells(i, db_startDate).Value
             
@@ -389,86 +386,48 @@ Sub openContractEdit()
         
         If .Security.Caption <> "Admin" Then
                 
- ''''''''''''''''''''''Disable controls to lock users from making changes
+ ''''''''''''''''''''''Setting Field Access
             
-            For Each cntrls In .Controls
-                
-                If TypeName(cntrls) = "TextBox" Or TypeName(cntrls) = "ComboBox" Then
-                    
-                    cntrls.Enabled = False
-                
-                End If
+            For j = 3 To Sheet7.Range("A1").End(xlDown).row
             
-            Next cntrls
+                .Controls(Sheet7.Range("C" & j).Value).Enabled = CBool(Sheet7.Range("D" & j).Value)
+            
+            Next j
+            
                     
             .ActBtn_AddNewContract.Visible = False
                 
- ''''''''''''''''''''''Enable users to just edit few fields if .enabled = true then users can edit those fields.
+            .ActBtn_DeleteContract.Visible = False
             
-             
-            .Field_5.Enabled = True
+''''''''''''''''''''''Condition if status is "Contract Executed"
+        
+        If .Field_13.Value = "Contract Executed (Final Status)" And Left(Sheet12.Range("position"), 3) = "PCO" Then
+ ''''''''''''''''''''''Enable all fields for PCO'''''''''''''''''''''''s to make changes if the status is marked as contract executed!
+        For j = 3 To Sheet7.Range("A1").End(xlDown).row
+        
+            .Controls(Sheet7.Range("C" & j).Value).Enabled = CBool(Sheet7.Range("E" & j).Value)
+        
+        Next j
+
+        .Field_34.Value = "High"
+        
+        .MSG.Caption = "Contract Has been Executed! Please fill All the Required Details and Save It as a Current_Active Contract"
+        
+        End If
             
-            .Field_19.Enabled = True
-            
-            .Field_20.Enabled = True
-            
-            .Field_21.Enabled = True
-            
-            .Field_28.Enabled = True
-            
-            .Field_29.Enabled = True
-            
-            .Field_31.Enabled = True
-            
-            .Field_34.Enabled = True
-            
-            .Field_39.Enabled = True
-            
-            .Field_40.Enabled = True
             
  ''''''''''''''''''''''If the selected contract is a temporary assignment to another PCO then the remarks field will be disabled. as it contains
-            
-            If Left(.Primary_Key.Caption, 4) = "Temp" Then
-                
-                .TempContrNum.Visible = True
-                
-                tempLabel = Split(.Field_28.Value, ";")
-                .Field_28.Value = tempLabel(1)
-                .TempContrNum.Caption = tempLabel(0)
-                
-            Else
-            .TempContrNum.Visible = False
-            
-            
-            End If
         Else
         
  ''''''''''''''''''''''conditions for accounts with admin access
             
-            For Each cntrls In .Controls
-                
-                cntrls.Enabled = True
+            For j = 3 To Sheet7.Range("A1").End(xlDown).row
             
-            Next cntrls
-                
- ''''''''''''''''''''''If the selected record is a temporary assignment the primary key will have a Temp keyword assigned to it
+                .Controls(Sheet7.Range("C" & j).Value).Enabled = CBool(Sheet7.Range("F" & j).Value)
             
-            If Left(pk, 4) = "Temp" Then
+            Next j
                 
- ''''''''''''''''''''''The following fields and buttons will be disabled for temporarily assigned contracts
-                
-                .Field_11.Enabled = False
-                
- ''''''''''''''''''''''Temporary assignment of PCO cannot be made for a record marked as a temporary
-                
-                .Field_12.Enabled = False
-                
-                .Btn_UnassignPco1.Visible = False
-                
-                .Btn_UnassignPco2.Visible = False
-            
-            Else
-                
+ 
  ''''''''''''''''''''''If the contract has a temporary assignment Display unassign Temporary Pco Button and disable the temporary Assignment field
                 
                 If .Field_11.Value <> "" Then
@@ -486,40 +445,10 @@ Sub openContractEdit()
                     .Btn_UnassignPco2.Visible = True
                 
                 End If
-            
-            End If
-                
- ''''''''''''''''''''''Disable Remarks field for temporary assgnment as it has the contract for which this record was a temporary assignment and we dont want any changes to be made in that field!
-            
-              If Left(.Primary_Key.Caption, 4) = "Temp" Then
-                
-                
-                tempLabel = Split(.Field_28.Value, ";")
-                .Field_28.Value = tempLabel(1)
-                .TempContrNum.Caption = tempLabel(0)
-            End If
-        
+               
         End If
         
- ''''''''''''''''''''''Condition if status is "Contract Executed"
-        
-        If .Field_13.Value = "Contract Executed (Final Status)" And Left(Sheet12.Range("position"), 3) = "PCO" Then
- ''''''''''''''''''''''Enable all fields for PCO'''''''''''''''''''''''s to make changes if the status is marked as contract executed!
-            For Each cntrls In .Controls
-                
-                cntrls.Enabled = True
-            
-            Next cntrls
-        
-        .Field_13.Enabled = False
-        
-        .Field_34.Value = "High"
-        
-        .Field_34.Enabled = False
-        
-        .MSG.Caption = "Contract Has been Executed! Please fill All the Required Details and Save It as a Current_Active Contract"
-        
-        End If
+ 
  ''''''''''''''''''''''Show the userform after all the data is read and populated in their respective fields
         
             
@@ -533,15 +462,15 @@ Sub openContractEdit()
         
         .ActBtn_NewContract.Visible = False
         
-        Dim yesNo As String
+        Dim Yesno As String
         
         .Field_36.Caption = IIf(.Field_36.Caption = "", 0, .Field_36.Caption)
         
         If .Field_43.Value = "" And CInt(.Field_36.Caption) < 90 And .Field_36.Caption <> 0 Then
         
-            yesNo = MsgBox("This contract is nearing renewal date, Would you like to mark this for Renewal?", vbYesNo, "Mark FOr Renewal?")
+            Yesno = MsgBox("This contract is nearing renewal date, Would you like to mark this for Renewal?", vbYesNo, "Mark FOr Renewal?")
                 
-            If yesNo = vbYes Then
+            If Yesno = vbYes Then
                 .Field_43.Value = "Yes"
                                 
                 .Field_3.Value = "Current_Renewal"
@@ -564,25 +493,24 @@ Sub openContractEdit()
         
     End With
     
-    settings.Restore
-
+    Settings.Restore
 
 End Sub
 
 
 Sub addNewContract()
 
-    Dim settings As New ExclClsSettings
+    Dim Settings As New ExclClsSettings
     Dim cntrl As Control
     
  '''''''''''''''''''''''Turn off excel Functionality to speedup the procedure
-    settings.TurnOn
-    settings.TurnOff
+    Settings.TurnOn
+    Settings.TurnOff
  ''''''''''''''''''''''Procedure to Add a new contract to the database
  ''''''''''''''''''''''This is an Admin Level procedure
     If Sheet12.Range("Security") <> "Admin" Then
         
-        settings.Restore
+        Settings.Restore
         
         Exit Sub
         
@@ -636,7 +564,7 @@ Sub addNewContract()
     
     End With
 
-    settings.Restore
+    Settings.Restore
 End Sub
 
 
@@ -645,10 +573,10 @@ End Sub
 
 Sub CalcTerm(Tsd As Date, ted As Date, Nor As Integer, Erd As Double, Ext As Double)
     
-    Dim settings As New ExclClsSettings
+    Dim Settings As New ExclClsSettings
     '''''''''''''''''''''''Turn off excel Functionality to speedup the procedure
-    settings.TurnOn
-    settings.TurnOff
+    Settings.TurnOn
+    Settings.TurnOff
     '''''''''''''''''''''''Procedure to Calculate the Terms start Date and end date for the contract Based on the Date Values provided
     EditContracts2.ListBox1.RowSource = ""
     
@@ -720,8 +648,48 @@ Sub CalcTerm(Tsd As Date, ted As Date, Nor As Integer, Erd As Double, Ext As Dou
 
     End If
 
-    settings.Restore
+    Settings.Restore
 
 End Sub
+
+
+Sub printcntrls(frm As EditContracts2)
+
+'Dim frm As New EditContracts2
+Dim cntrls As Control
+Dim r As Long
+
+r = 3
+
+
+
+With frm
+
+    For Each cntrls In .Controls
+        
+        If (TypeName(cntrls) = "TextBox" Or TypeName(cntrls) = "ComboBox") And InStr(1, cntrls.name, "Field") > 0 Then
+            
+            Sheet7.Cells(r, 10).Value = cntrls.name
+            
+            Sheet7.Cells(r, 11).Value = cntrls.Enabled
+            
+            r = r + 1
+            
+        ElseIf TypeName(cntrls) = "Label" And InStr(1, cntrls.name, "Field") > 0 And InStr(1, cntrls.name, "Field_Header") = 0 Then
+            
+            Sheet7.Cells(r, 10).Value = cntrls.name
+            
+            Sheet7.Cells(r, 11).Value = cntrls.Enabled
+            
+            r = r + 1
+            
+        End If
+        
+    Next cntrls
+
+End With
+
+End Sub
+
 
 
