@@ -2,10 +2,10 @@ Attribute VB_Name = "DownloadData"
 'https://script.google.com/macros/s/AKfycbzESMb0FcqAkkmu8TXXnkeL1EAR1ZBMY5V3j8s4GB4mCsHcDi5Lr3HfUVhb7AxWU1JW3g/exec
 Sub getUpdatedData()
 
-    Dim settings As New ExclClsSettings
+    Dim Settings As New ExclClsSettings
         
-    settings.TurnOn
-    settings.TurnOff
+    Settings.TurnOn
+    Settings.TurnOff
     
 
     Dim Httpreq As Object
@@ -27,7 +27,8 @@ Sub getUpdatedData()
     DoEvents
     Call HTMLtoRange(response, Sheet8)
     
-    settings.Restore
+    Settings.Restore
+    
 End Sub
 
 
@@ -55,6 +56,34 @@ End Sub
 
 
 
+Sub getFieldAccessData(Optional typ As String)
+
+Dim URL As String
+    
+    Dim seconds As Integer
+    
+    seconds = 120
+    
+    If DateDiff("s", Sheet7.Range("T1").Value, Now) < seconds And typ <> "Mandatory" Then
+
+        Exit Sub
+
+    End If
+    
+    unprotc Sheet7
+    
+    
+    URL = "https://script.google.com/macros/s/AKfycbx7TeU6kC8Wh2TYVnNYWb4PWKTFwtbwYlM43bWDKiG-O4OX1SCA1UHEINNJavxamNf5/exec"
+
+    getResponseFromSheets URL, Sheet7
+        
+    Sheet7.Range("T1").Value = Now
+        
+    protc Sheet7
+
+End Sub
+
+
 Sub HTMLtoRange(Data, sheet As Worksheet)
 
     Dim HTML As Object
@@ -63,7 +92,7 @@ Sub HTMLtoRange(Data, sheet As Worksheet)
     Dim ws As Worksheet
     Dim tbl As ListObject
     Set HTML = CreateObject("htmlFile")
-    
+    Dim col As Long, row As Long
     Set ws = sheet
     
     HTML.body.innerHTML = Data
@@ -111,5 +140,42 @@ Sub HTMLtoRange(Data, sheet As Worksheet)
     
     Set tbl = ws.ListObjects.Add(xlSrcRange, ws.Range("A1").CurrentRegion, , xlYes)
     
+    tbl.name = ws.name
+    Dim rng As Range
+    
+     For Each rng In ws.UsedRange.SpecialCells(xlCellTypeConstants)
+        If IsNumeric(rng) Then rng.Value = Val(rng.Value) * 1
+    Next rng
+    
 End Sub
 
+
+Sub ConverttoDate()
+
+    Dim rng As Range, headerRng As Range
+    
+    For Each headerRng In Sheet8.Range("A1").Resize(1, 46)
+    
+        If InStr(1, headerRng.Value, "Date", vbTextCompare) > 0 Then
+    
+    '        Debug.Print headerRng.Value
+            
+            For Each rng In Sheet8.Range("Database[" & headerRng.Value & "]")
+                
+                If rng.Value <> "" And Year(CDate(rng.Value)) <> 1899 And Year(CDate(rng.Value)) <> 3799 Then
+                                    
+                    rng.Value = CDate(rng.Value)
+                    
+                Else
+                
+                    rng.Value = vbNullString
+                        
+                End If
+                
+            Next rng
+            
+        End If
+    
+    Next headerRng
+
+End Sub

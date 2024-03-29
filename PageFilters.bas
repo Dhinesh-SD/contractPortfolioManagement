@@ -193,19 +193,25 @@ Sub printFilters(ws As Worksheet, resultsheet As Worksheet)
     Dim BetweenHeadersCount As String
     Dim FinalFiltersArr() As Variant
     
+    On Error GoTo Handler:
+    
     'Set ws = Sheet2
     totalRows = 1
     totalCols = 1
     multiFilterCount = 0
     BetweenHeadersCount = 0
     
+    
+    
     ReDim FinalFiltersArr(1 To totalRows, 1 To totalCols)
     
     For Each rng In ws.Range("D14:T14")
     
         If rng.Value <> "" Then
-        
             
+            filtPrint ws, rng.Offset(-1)
+            
+            'On Error GoTo 0
             If rng.Offset(-1).Value = "Between" Then
             
                 If BetweenHeaders = "" Then
@@ -392,8 +398,8 @@ Sub printFilters(ws As Worksheet, resultsheet As Worksheet)
         resultsheet.Cells(1, betweenFilterCol + 1).Value = BetweenHeaders
         For i = LBound(FinalFiltersArr) To UBound(FinalFiltersArr)
         
-            FinalFiltersArr(i, totalCols + 1) = inBetweenValsArr(0)
-            FinalFiltersArr(i, totalCols + 2) = inBetweenValsArr(1)
+            FinalFiltersArr(i, totalCols) = inBetweenValsArr(0)
+            FinalFiltersArr(i, totalCols + 1) = inBetweenValsArr(1)
             
         Next i
         
@@ -409,8 +415,8 @@ Sub printFilters(ws As Worksheet, resultsheet As Worksheet)
                
             For j = LBound(FinalFiltersArr) To UBound(FinalFiltersArr)
             
-            FinalFiltersArr(j, betweenFilterCol - db_filters + 1) = inBetweenValsArr(i * 2)
-            FinalFiltersArr(j, betweenFilterCol - db_filters + 2) = inBetweenValsArr(i * 2 + 1)
+                FinalFiltersArr(j, betweenFilterCol - db_filters + 1) = inBetweenValsArr(i * 2)
+                FinalFiltersArr(j, betweenFilterCol - db_filters + 2) = inBetweenValsArr(i * 2 + 1)
             
             Next j
                
@@ -423,6 +429,13 @@ Sub printFilters(ws As Worksheet, resultsheet As Worksheet)
     resultsheet.Cells(2, db_filters).Resize(UBound(FinalFiltersArr, 1), UBound(FinalFiltersArr, 2)).Value = FinalFiltersArr
 
 
+
+
+Exit Sub
+
+Handler:
+resultsheet.Range("DA1").CurrentRegion.ClearContents
+
 End Sub
 
 
@@ -434,7 +447,7 @@ Sub ApplyFilters(ws As Worksheet)
     Dim col As Integer
     Dim cnt As Integer
     Dim filtRow As Integer
-    Dim Target As Range
+    Dim target As Range
     Dim sh As Worksheet
     Dim filterTxt As String, filters() As String
     Dim multifilter As Integer
@@ -442,12 +455,12 @@ Sub ApplyFilters(ws As Worksheet)
     Dim multiFiltHeader As String
     Dim multiFiltList() As String
     Dim mastercount As Double
-    Dim settings As New ExclClsSettings
+    Dim Settings As New ExclClsSettings
     
     'Turn off excel Functionality to speedup the procedure
-    settings.TurnOn
+    Settings.TurnOn
     
-    settings.TurnOff
+    Settings.TurnOff
 
     unprotc ws
     
@@ -466,6 +479,8 @@ Sub ApplyFilters(ws As Worksheet)
     
     filtRow = pg_FilterRow
     
+      
+    
     sh.Cells(1, db_filters).CurrentRegion.ClearContents
     
     mastercount = 0
@@ -474,57 +489,59 @@ Sub ApplyFilters(ws As Worksheet)
     
     For i = 4 To 20
         
-        Set Target = ws.Cells(filtRow, i)
+        Set target = ws.Cells(filtRow, i)
     
         If ws.name = Sheet2.name And ws.Cells(filtRow + 4, i).Value = "Type" Then
             
-            Target.Value = "Contains"
+            target.Value = "Contains"
             
             ws.Cells(filtRow + 1, i).Value = "Active"
         
         ElseIf ws.name = Sheet20.name And ws.Cells(filtRow + 4, i).Value = "Type" Then
             
-            Target.Value = "Equals"
+            target.Value = "Equals"
             
             ws.Cells(filtRow + 1, i).Value = "Closed"
         
         ElseIf ws.name = Sheet4.name And ws.Cells(filtRow + 4, i).Value = "Type" Then
             
-            Target.Value = "Contains"
+            target.Value = "Contains"
             
             ws.Cells(filtRow + 1, i).Value = "Amendment"
         
         ElseIf ws.name = Sheet3.name And ws.Cells(filtRow + 4, i).Value = "Type" Then
             
-            Target.Value = "Ends With"
+            target.Value = "Ends With"
             
             ws.Cells(filtRow + 1, i).Value = "(No Existing)"
         
         ElseIf ws.name = Sheet5.name And ws.Cells(filtRow + 4, i).Value = "Type" Then
             
-            Target.Value = "Ends With"
+            target.Value = "Ends With"
             
             ws.Cells(filtRow + 1, i).Value = "(Replace Existing)"
         
         ElseIf ws.name = Sheet10.name And ws.Cells(filtRow + 4, i).Value = "Type" Then
             
-            Target.Value = "Equals"
+            target.Value = "Equals"
             
             ws.Cells(filtRow + 1, i).Value = "Deviation"
         
         ElseIf ws.name = Sheet23.name And ws.Cells(filtRow + 4, i).Value = "Type" Then
             
-            Target.Value = "Contains"
+            target.Value = "Contains"
             
             ws.Cells(filtRow + 1, i).Value = "Renewal"
         
         ElseIf ws.name = Sheet24.name And ws.Cells(filtRow + 4, i).Value = "Type" Then
             
-            Target.Value = "Ends With"
+            target.Value = "Ends With"
             
             ws.Cells(filtRow + 1, i).Value = "Extension"
               
         End If
+        
+        filtPrint ws, target.Offset(1)
     
 skipHere:
     Next i
@@ -589,7 +606,7 @@ skipHere:
     
     protc ws
     
-    settings.Restore
+    Settings.Restore
 
 End Sub
 
@@ -618,7 +635,7 @@ Sub AllDatesCalc()
     Dim contrNum        As String
     Dim j               As Long, i As Long
     Dim k               As Long
-    Dim yesNo           As String
+    Dim Yesno           As String
     Dim TsdArr() As Variant
     Dim TedArr() As Variant
     Dim MedArr() As Variant
@@ -751,7 +768,7 @@ Sub CalcDates(sh As Worksheet, i As Long)
     Dim contrNum        As String
     Dim j               As Long
     Dim k               As Long
-    Dim yesNo           As String
+    Dim Yesno           As String
     Dim TsdArr() As Variant
     Dim TedArr() As Variant
     Dim MedArr() As Variant
@@ -821,9 +838,9 @@ Sub CalcDates(sh As Worksheet, i As Long)
         
         If sh.Cells(i, db_DaysLeftFrRen).Value <> vbNullString And sh.Cells(i, db_Priority).Value <> "High" Then
         
-            yesNo = MsgBox("Days Left For Renewal is less than 100 days!" & vbNewLine & "Mark as High Priority?", vbYesNo, "Mark as High priority")
+            Yesno = MsgBox("Days Left For Renewal is less than 100 days!" & vbNewLine & "Mark as High Priority?", vbYesNo, "Mark as High priority")
 
-            If yesNo = vbYes Then sh.Cells(i, db_Priority).Value = "High"
+            If Yesno = vbYes Then sh.Cells(i, db_Priority).Value = "High"
         
         End If
     
@@ -866,12 +883,12 @@ Sub applyAdvFilt(Optional newSheet As Worksheet)
     
     'Dim Timer As New TimerCls
     Dim MasterTimer As New TimerCls
-    Dim settings As New ExclClsSettings
+    Dim Settings As New ExclClsSettings
     
     'Turn off excel Functionality to speedup the procedure
-    settings.TurnOn
+    Settings.TurnOn
     
-    settings.TurnOff
+    Settings.TurnOff
     MasterTimer.start
     'Timer.start
     
@@ -910,6 +927,7 @@ Sub applyAdvFilt(Optional newSheet As Worksheet)
     
     End If
     
+    
     unprotc parentsheet
     
     parentsheet.Range("A9").Value = True
@@ -932,7 +950,7 @@ Sub applyAdvFilt(Optional newSheet As Worksheet)
         
         rng.AdvancedFilter xlFilterCopy, src, drng
         
-        sh.ListObjects(1).Resize drng.CurrentRegion
+        If drng.CurrentRegion.rows.count <> 1 Then sh.ListObjects(1).Resize drng.CurrentRegion
     
     Else
         
@@ -1039,7 +1057,7 @@ On Error Resume Next
 On Error GoTo 0
     parentsheet.Range(parentsheet.ListObjects(1).name & "[Description]").ColumnWidth = 50
     
-    With parentsheet.Range("D17").CurrentRegion
+    With parentsheet.ListObjects(1).Range
     
         .RowHeight = 25
     
@@ -1088,7 +1106,7 @@ On Error GoTo 0
     
     Dim errcount As Integer
     
-    settings.Restore
+    Settings.Restore
     
     Exit Sub
     
@@ -1097,9 +1115,9 @@ Handler:
     errcount = errcount + 1
         
     'Turn off excel Functionality to speedup the procedure
-    settings.TurnOn
+    Settings.TurnOn
     
-    settings.TurnOff
+    Settings.TurnOff
 
     
     If errcount = 1 Then
@@ -1120,7 +1138,7 @@ Handler:
     
     End If
     
-    settings.Restore
+    Settings.Restore
 
 End Sub
 
@@ -1281,9 +1299,9 @@ End Sub
 Sub reframe()
 
 Dim sh As Worksheet
-Dim settings As New ExclClsSettings
+Dim Settings As New ExclClsSettings
 
-settings.TurnOff
+Settings.TurnOff
 
 For Each sh In ThisWorkbook.Worksheets
     If sh.Range("A1").Value = "NavTo" Then
@@ -1294,7 +1312,7 @@ For Each sh In ThisWorkbook.Worksheets
         protc sh
     End If
 Next sh
-settings.Restore
+Settings.Restore
 
 End Sub
 
@@ -1361,12 +1379,12 @@ End Sub
 
 Sub dlfrDatabar(Optional sheet As Worksheet, Optional newLastrow As Long = 1, Optional dlfrFinder As Integer)
 
-    Dim settings As New ExclClsSettings
+    Dim Settings As New ExclClsSettings
     
     'Turn off excel Functionality to speedup the procedure
-    settings.TurnOn
+    Settings.TurnOn
     
-    settings.TurnOff
+    Settings.TurnOff
 
     Dim rng As Range
     
@@ -1490,7 +1508,7 @@ Sub dlfrDatabar(Optional sheet As Worksheet, Optional newLastrow As Long = 1, Op
     
     End If
     
-    settings.Restore
+    Settings.Restore
  
 End Sub
 
@@ -1619,12 +1637,13 @@ End Function
 
 Sub refreshAllContracts()
     
-    Dim settings As New ExclClsSettings
+    Dim Settings As New ExclClsSettings
+    Dim stats As New statClass
     
     'Turn off excel Functionality to speedup the procedure
-    settings.TurnOn
+    Settings.TurnOn
     
-    settings.TurnOff
+    Settings.TurnOff
 
     unProtectWorksheet
     
@@ -1642,9 +1661,17 @@ Sub refreshAllContracts()
     
     Set ws = Sheet16
     
+    stats.showStatus "Downloading Contracts Data.."
+    
     getUpdatedData
     
+    stats.showStatus "Downloading User Data.."
+    
     SyncstaffData_FromGsheets "Mandatory"
+    
+    stats.showStatus "Downloading Field Access Data.."
+    
+    getFieldAccessData "Mandatory"
     
     col = ws.Range("D17").End(xlToRight).Column
     
@@ -1654,7 +1681,11 @@ Sub refreshAllContracts()
     
     ws.Range(ws.ListObjects(1).name).ClearContents
     
+    stats.showStatus "Calculating Dates.."
+    
     AllDatesCalc
+    
+    ConverttoDate
     
     sh.Range("FG1").Value = Now
         
@@ -1713,25 +1744,47 @@ Sub refreshAllContracts()
     
     End If
     
+    stats.showStatus "Refreshing Data..."
+    
     clearFilters ws
     
     protectWorksheet
     
-    settings.Restore
+    stats.closeStats
+    
+    Settings.Restore
     
 End Sub
 
+Sub updatePivotTable()
 
+Dim srcTable As ListObject, destinTable As ListObject
+
+Set srcTable = Sheet8.ListObjects(1)
+
+Set destinTable = Sheet28.ListObjects(1)
+
+destinTable.DataBodyRange.ClearContents
+
+destinTable.DataBodyRange.Resize(srcTable.ListRows.count, srcTable.ListColumns.count).Value = srcTable.DataBodyRange.Value
+
+destinTable.Resize Sheet28.Range("A1").CurrentRegion
+
+End Sub
 
 Sub RefDashboard()
 
+    updatePivotTable
+    
     Dim pt As PivotTable
     
-    For Each pt In Sheet22.PivotTables
-        
+    For Each pt In Sheet25.PivotTables
+
         pt.PivotCache.Refresh
     
     Next pt
+    
+    MsgBox "Refreshed!"
 
 End Sub
 

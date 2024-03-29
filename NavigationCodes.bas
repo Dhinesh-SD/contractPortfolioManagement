@@ -2,10 +2,10 @@ Attribute VB_Name = "NavigationCodes"
 Option Explicit
 Sub Navto(wsheet As Worksheet)
 
-    Dim settings As New ExclClsSettings
+    Dim Settings As New ExclClsSettings
     'Turn off excel Functionality to speedup the procedure
-    settings.TurnOn
-    settings.TurnOff
+    Settings.TurnOn
+    Settings.TurnOff
     
     Dim sh As Worksheet
     
@@ -43,6 +43,15 @@ Sub Navto(wsheet As Worksheet)
         
         End If
         
+        If ActiveSheet.Shapes("Info_profileName").TextFrame.Characters.Text <> Sheet12.Range("pName").Value Then
+            
+        unprotc ActiveSheet
+        
+            ActiveSheet.Shapes("Info_profileName").TextFrame.Characters.Text = Sheet12.Range("pName").Value
+            ActiveSheet.Shapes("Heading_AppName").TextFrame.Characters.Text = Replace(ThisWorkbook.name, ".xlsm", "")
+        
+        protc ActiveSheet
+        End If
         Range("A18").Select
                 
         ActiveWindow.FreezePanes = True
@@ -51,9 +60,11 @@ Sub Navto(wsheet As Worksheet)
     
     ActiveWindow.Zoom = 90
     
-    settings.Restore
+    Settings.Restore
     
 End Sub
+
+
 Sub navtoSheet()
 
     Dim ws As Worksheet

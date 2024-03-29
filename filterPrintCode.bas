@@ -15,15 +15,15 @@ Set rng = ws.Cells(16, target.Column)
         
         ElseIf target.Value = "Does Not Equals" Then
             
-            rng.Value = "=" & Chr(34) & "<>" & Chr(34)
+            rng.Value = "=" & Chr(34) & "<>Txt" & Chr(34)
         
         ElseIf target.Value = "Contains" Then
              
-             rng.Value = "=" & Chr(34) & "=*" & "Txt" & "*" & Chr(34)
+             rng.Value = "=" & Chr(34) & "=*Txt*" & Chr(34)
         
         ElseIf target.Value = "Does Not Contains" Then
             
-            rng.Value = "<>*" & "Txt" & "*"
+            rng.Value = "<>*Txt*"
         
         ElseIf target.Value = "Begins With" Then
             
@@ -35,23 +35,23 @@ Set rng = ws.Cells(16, target.Column)
         
         ElseIf target.Value = "Greater Than" Or target.Value = "After" Then
             
-            rng.Value = ">" & "Txt"
+            rng.Value = ">Txt"
         
         ElseIf target.Value = "Greater Than or equal to" Then
              
-             rng.Value = ">=" & "Txt"
+             rng.Value = ">=Txt"
         
         ElseIf target.Value = "Less Than or equal to" Then
             
-            rng.Value = "<=" & "Txt"
+            rng.Value = "<=Txt"
         
         ElseIf target.Value = "Less Than" Or target.Value = "Before" Then
              
-             rng.Value = "<" & "Txt"
+             rng.Value = "<Txt"
         
         ElseIf target.Value = "Between" Then
              
-             rng.Value = ">=" & "Txt" & ",<=" & "Txt"
+             rng.Value = ">=Txt" & ",<=Txt"
         
         End If
 
