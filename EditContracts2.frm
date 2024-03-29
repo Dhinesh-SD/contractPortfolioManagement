@@ -366,11 +366,11 @@ End Sub
 
 Private Sub Btn_OpenFolder_Click()
 
-    Dim Obj As Object
+    Dim obj As Object
     
-    Set Obj = CreateObject("Scripting.FileSystemObject")
+    Set obj = CreateObject("Scripting.FileSystemObject")
     
-    If Me.Field_33.Value <> "" And Obj.FolderExists(Me.Field_33.Value & "\") Then
+    If Me.Field_33.Value <> "" And obj.FolderExists(Me.Field_33.Value & "\") Then
     
         CreateObject("WScript.Shell").Run Chr(34) & Me.Field_33.Value & "\" & Chr(34)
     End If
@@ -408,9 +408,9 @@ End Sub
 
 
 Private Sub Btn_Previous_Click()
-Dim settings As New ExclClsSettings
+Dim Settings As New ExclClsSettings
  
-settings.TurnOn
+Settings.TurnOn
 ThisWorkbook.Activate
     If ActiveCell.row = 18 Then
         ActiveSheet.Cells(rows.count, 4).End(xlUp).Select
@@ -422,9 +422,9 @@ ThisWorkbook.Activate
 End Sub
 
 Private Sub Btn_Next_Click()
-Dim settings As New ExclClsSettings
+Dim Settings As New ExclClsSettings
 
-settings.TurnOn
+Settings.TurnOn
 
 ThisWorkbook.Activate
     If ActiveCell.row = ActiveSheet.Cells(rows.count, 4).End(xlUp).row Then
@@ -562,11 +562,11 @@ End Sub
 
 Private Sub ComboBox1_Change()
 
-    Dim settings As New ExclClsSettings
+    Dim Settings As New ExclClsSettings
     'Turn off excel Functionality to speedup the procedure
-    settings.TurnOn
+    Settings.TurnOn
     
-    settings.TurnOff
+    Settings.TurnOff
   
     If ComboBox2.Value = "" Then ComboBox2.Value = 0
     
@@ -580,16 +580,16 @@ Private Sub ComboBox1_Change()
     
     Btn_RefTermDates.Visible = True
     
-    settings.Restore
+    Settings.Restore
 
 End Sub
 
 Private Sub ComboBox2_Change()
-    Dim settings As New ExclClsSettings
+    Dim Settings As New ExclClsSettings
     'Turn off excel Functionality to speedup the procedure
-    settings.TurnOn
+    Settings.TurnOn
     
-    settings.TurnOff
+    Settings.TurnOff
     
     If ComboBox2.Value = "" Then ComboBox2.Value = 0
     
@@ -603,16 +603,16 @@ Private Sub ComboBox2_Change()
     
     Btn_RefTermDates.Visible = True
     
-    settings.Restore
+    Settings.Restore
 
 End Sub
 
 Private Sub ComboBox3_Change()
-    Dim settings As New ExclClsSettings
+    Dim Settings As New ExclClsSettings
     'Turn off excel Functionality to speedup the procedure
-    settings.TurnOn
+    Settings.TurnOn
     
-    settings.TurnOff
+    Settings.TurnOff
       
     If ComboBox4.Value = "" Then ComboBox2.Value = 0
         
@@ -622,16 +622,16 @@ Private Sub ComboBox3_Change()
      
     Btn_RefTermDates.Visible = True
     
-    settings.Restore
+    Settings.Restore
 End Sub
 
 Private Sub ComboBox4_Change()
 
-    Dim settings As New ExclClsSettings
+    Dim Settings As New ExclClsSettings
     'Turn off excel Functionality to speedup the procedure
-    settings.TurnOn
+    Settings.TurnOn
     
-    settings.TurnOff
+    Settings.TurnOff
 
     If ComboBox4.Value = "" Then ComboBox4.Value = 0
     
@@ -641,9 +641,11 @@ Private Sub ComboBox4_Change()
     
     Btn_RefTermDates.Visible = True
 
-    settings.Restore
+    Settings.Restore
     
 End Sub
+
+
 
 Private Sub Field_34_Change()
     
@@ -700,9 +702,9 @@ Public Sub SelectFolderLoc()
 Me.Field_33.Enabled = True
 Dim dialogBox As FileDialog
 
-Dim Obj As Object
+Dim obj As Object
 
-Set Obj = CreateObject("Scripting.fileSystemObject")
+Set obj = CreateObject("Scripting.fileSystemObject")
 
 Dim initialValue As String
 
@@ -717,9 +719,9 @@ Dim initialValue As String
     dialogBox.Title = "Select Folder to Save This Files"
 
 'Set the default folder to open
-    If initialValue = "" Or Not Obj.FolderExists(initialValue & "\") Then
+    If initialValue = "" Or Not obj.FolderExists(initialValue & "\") Then
         
-        If Not Obj.FolderExists(initialValue & "\") Then MsgBox ("This Folder Location Does Not Exist")
+        If Not obj.FolderExists(initialValue & "\") Then MsgBox ("This Folder Location Does Not Exist")
         
         dialogBox.InitialFileName = "C:\Users"
     Else
@@ -734,7 +736,7 @@ Dim initialValue As String
         Me.Field_33.Value = dialogBox.SelectedItems(1)
     End If
       
-    Dim strfile As String, row As Integer, yesNo As String
+    Dim strfile As String, row As Integer, Yesno As String
             
             
             If Me.Field_33.Value <> "" Then
@@ -744,9 +746,9 @@ Dim initialValue As String
             
             If Me.Field_33.Value <> initialValue Then
                 
-                yesNo = MsgBox("Do you Want to move the contents Of previous folder into the New Destination?", vbYesNo, "Move Files?")
+                Yesno = MsgBox("Do you Want to move the contents Of previous folder into the New Destination?", vbYesNo, "Move Files?")
             
-                If yesNo = vbNo Then Me.ListBox2.Clear
+                If Yesno = vbNo Then Me.ListBox2.Clear
                 
                 row = Me.ListBox2.ListCount
                 
@@ -1133,11 +1135,11 @@ End Sub
 
 Private Sub ActBtn_NewContract_Click()
         
-    Dim settings As New ExclClsSettings
+    Dim Settings As New ExclClsSettings
     'Turn off excel Functionality to speedup the procedure
-    settings.TurnOn
+    Settings.TurnOn
     
-    settings.TurnOff
+    Settings.TurnOff
     
     Dim wb As Workbook
     Dim staffSheet As Worksheet
@@ -1323,20 +1325,20 @@ Private Sub ActBtn_NewContract_Click()
             
     End Select
         
-    settings.Restore
+    Settings.Restore
     
     Exit Sub
     
 Handler:
     'Turn off excel Functionality to speedup the procedure
-    settings.TurnOn
+    Settings.TurnOn
     
-    settings.TurnOff
+    Settings.TurnOff
   
         
         updateLog ThisWorkbook, Err.Number & ":" & Err.Description, "Add New Contracts : Unsucessful"
     
-    settings.Restore
+    Settings.Restore
 End Sub
 
 
@@ -1344,11 +1346,11 @@ End Sub
 
 Private Sub ActBtn_DeleteContract_Click()
 
- Dim settings As New ExclClsSettings
+ Dim Settings As New ExclClsSettings
     'Turn off excel Functionality to speedup the procedure
-    settings.TurnOn
+    Settings.TurnOn
     
-    settings.TurnOff
+    Settings.TurnOff
     
     Dim wb As Workbook
     Dim staffSheet As Worksheet
@@ -1365,7 +1367,7 @@ Private Sub ActBtn_DeleteContract_Click()
     Dim BeforeUpdate As String
     Dim reason As String
     Dim typ As String
-    Dim yesNo As String
+    Dim Yesno As String
     
     If Sheet12.Range("pName").Value <> Field_2.Caption And Sheet12.Range("Security").Value <> "Admin" Then
     
@@ -1373,15 +1375,15 @@ Private Sub ActBtn_DeleteContract_Click()
         
         Unload Me
         
-        settings.Restore
+        Settings.Restore
         
         Exit Sub
         
     End If
     
-    yesNo = MsgBox(" Do you Want to Delete this Contract?", vbYesNo, "Confirm Delete?")
+    Yesno = MsgBox(" Do you Want to Delete this Contract?", vbYesNo, "Confirm Delete?")
     
-    If yesNo = vbNo Then Exit Sub
+    If Yesno = vbNo Then Exit Sub
     
     reason = InputBox("Why are you deleting this contract?", "Reason For Deleting Contract Record")
     
@@ -1451,7 +1453,7 @@ Private Sub ActBtn_DeleteContract_Click()
     
     Unload Me
     
-    settings.Restore
+    Settings.Restore
     
     Exit Sub
     
@@ -1460,7 +1462,7 @@ Handler:
         
     updateLog ThisWorkbook, Err.Number & ":" & Err.Description, "Delete Contracts : Unsucessful"
     
-    settings.Restore
+    Settings.Restore
 
 End Sub
 
@@ -1538,11 +1540,11 @@ End Sub
 
 Private Sub Btn_UnassignPco1_Click()
 
-Dim settings As New ExclClsSettings
+Dim Settings As New ExclClsSettings
     'Turn off excel Functionality to speedup the procedure
-    settings.TurnOn
+    Settings.TurnOn
     
-    settings.TurnOff
+    Settings.TurnOff
     Dim wb As Workbook
     Dim staffSheet As Worksheet
     Dim ws As Worksheet
@@ -1594,7 +1596,7 @@ Dim settings As New ExclClsSettings
     
     TempPco1.Caption = "False"
     
-    settings.Restore
+    Settings.Restore
     
 End Sub
 
@@ -1603,11 +1605,11 @@ End Sub
 
 Private Sub Btn_UnassignPco2_Click()
 
-    Dim settings As New ExclClsSettings
+    Dim Settings As New ExclClsSettings
     'Turn off excel Functionality to speedup the procedure
-    settings.TurnOn
+    Settings.TurnOn
     
-    settings.TurnOff
+    Settings.TurnOff
     
     Dim wb As Workbook
     Dim staffSheet As Worksheet
@@ -1658,17 +1660,17 @@ Private Sub Btn_UnassignPco2_Click()
     
     TempPco2.Caption = "False"
     
-    settings.Restore
+    Settings.Restore
 
 End Sub
 
 
 Private Sub ActBtn_Save_Click()
-Dim settings As New ExclClsSettings
+Dim Settings As New ExclClsSettings
     'Turn off excel Functionality to speedup the procedure
-    settings.TurnOn
+    Settings.TurnOn
     
-    settings.TurnOff
+    Settings.TurnOff
     
     Dim staffSheet As Worksheet
     Dim ws As Worksheet, localWs As Worksheet
@@ -1682,7 +1684,7 @@ Dim settings As New ExclClsSettings
     Dim rng As Range
     Dim beforeUpdateVals As String
     Dim tempPk As String
-    Dim yesNo As String
+    Dim Yesno As String
     
     Dim tempRow As Long
     
@@ -1694,7 +1696,7 @@ Dim settings As New ExclClsSettings
         
         Unload Me
         
-        settings.Restore
+        Settings.Restore
         
         Exit Sub
         
@@ -1856,19 +1858,19 @@ NextControl:
         
         CalcDates ws, i
         
-        Dim Obj As Object, rootFolder As String, contractFolder
+        Dim obj As Object, rootFolder As String, contractFolder
         
         rootFolder = Replace(ThisWorkbook.FullName, ThisWorkbook.name, "PCO Contract Files")
         
-        Set Obj = CreateObject("Scripting.fileSystemObject")
+        Set obj = CreateObject("Scripting.fileSystemObject")
         
         If Me.ListBox2.ListCount > 0 Then
         
             For i = 0 To Me.ListBox2.ListCount - 1
                 
-                If Not Obj.FolderExists(rootFolder) Then
+                If Not obj.FolderExists(rootFolder) Then
                 
-                    Obj.CreateFolder (rootFolder)
+                    obj.CreateFolder (rootFolder)
                 
                 End If
                 
@@ -1891,9 +1893,9 @@ NextControl:
                 
                 If Me.ListBox2.List(i, 1) <> contractFolder & "\" Then
                 
-                    If Not Obj.FolderExists(contractFolder) Then
+                    If Not obj.FolderExists(contractFolder) Then
                         
-                        Obj.CreateFolder (contractFolder)
+                        obj.CreateFolder (contractFolder)
                     
                     End If
                     
@@ -1950,14 +1952,14 @@ NextControl:
     
     
     
-    settings.Restore
+    Settings.Restore
     
     Exit Sub
     
 Handler:
     
     
-    settings.Restore
+    Settings.Restore
         
     updateLog ThisWorkbook, Err.Number & ":" & Err.Description, "Save Updates Procedure: Unsuccessful"
     
@@ -2025,6 +2027,8 @@ Private Sub Btn_Link_Click()
     
     Dim contrNum As String
     Dim i As Long
+    
+   If Field_32.Value = "" Then Exit Sub
    
    If Me.Btn_Link.Caption = "LINK CONTRACT" Then
         'Link Contract
@@ -2351,12 +2355,12 @@ End Sub
 Private Sub UserForm_Terminate()
 
     Dim cntrls As Control
-    Dim Values As New Scripting.Dictionary
+    Dim values As New Scripting.Dictionary
     Dim rowNo As Integer, colNo As Integer
 
-    Dim settings As New ExclClsSettings
+    Dim Settings As New ExclClsSettings
     
-    Dim yesNo As String
+    Dim Yesno As String
 
     If Me.ActBtn_NewContract.Visible Then Exit Sub
 
@@ -2364,7 +2368,7 @@ Private Sub UserForm_Terminate()
         rowNo = CInt(Me.db_Row.Caption)
     Else
     
-        settings.TurnOn
+        Settings.TurnOn
         
         Exit Sub
     
@@ -2376,19 +2380,19 @@ Private Sub UserForm_Terminate()
             
             If TypeName(cntrls) = "Label" Then
                 
-                Values.Add cntrls.name, cntrls.Caption
+                values.Add cntrls.name, cntrls.Caption
                 
             Else
                 If cntrls.name = "Field_28" And Me.TempContrNum.Caption <> "" Then
                 
-                    Values.Add cntrls.name, Me.TempContrNum.Caption & ";" & cntrls.Value
+                    values.Add cntrls.name, Me.TempContrNum.Caption & ";" & cntrls.Value
                 
                 ElseIf cntrls.name = "Field_33" Then
                 
                     'Values.Add cntrls.name, Me.FileLocationData.Caption
                     
                 Else
-                    Values.Add cntrls.name, cntrls.Value
+                    values.Add cntrls.name, cntrls.Value
                 End If
             End If
         
@@ -2400,14 +2404,14 @@ Private Sub UserForm_Terminate()
     For colNo = 2 To Sheet8.Range("A1").End(xlToRight).Column - 3
          
     
-        If colNo <> 33 And Trim(CStr(Sheet8.Cells(rowNo, colNo).Value)) <> Trim(Values("Field_" & colNo)) And (CStr(Sheet8.Cells(rowNo, colNo).Value) <> "" And Values("Field_" & colNo) <> 0) Then
+        If colNo <> 33 And Trim(CStr(Sheet8.Cells(rowNo, colNo).Value)) <> Trim(values("Field_" & colNo)) And (CStr(Sheet8.Cells(rowNo, colNo).Value) <> "" And values("Field_" & colNo) <> 0) Then
 
-            Debug.Print Me.Controls("Field_Header_" & colNo).Caption, Len(Values("Field_" & colNo)), Len(Sheet8.Cells(rowNo, colNo).Value)
+            Debug.Print Me.Controls("Field_Header_" & colNo).Caption, Len(values("Field_" & colNo)), Len(Sheet8.Cells(rowNo, colNo).Value)
 
-            Debug.Print (CStr(Sheet8.Cells(rowNo, colNo).Value) <> "" And Values("Field_" & colNo) <> 0)
-            yesNo = MsgBox("Changes were made on """ & Me.Controls("Field_Header_" & colNo).Caption & """ Field in this contract record," & vbNewLine & "Would you like to save those changes?" & vbNewLine & " Click ""Yes"" to Save, Click ""No"" to close without Saving", vbYesNo, "Save Record?")
+            Debug.Print (CStr(Sheet8.Cells(rowNo, colNo).Value) <> "" And values("Field_" & colNo) <> 0)
+            Yesno = MsgBox("Changes were made on """ & Me.Controls("Field_Header_" & colNo).Caption & """ Field in this contract record," & vbNewLine & "Would you like to save those changes?" & vbNewLine & " Click ""Yes"" to Save, Click ""No"" to close without Saving", vbYesNo, "Save Record?")
 
-            If yesNo = vbYes Then
+            If Yesno = vbYes Then
 
                 ActBtn_Save_Click
                 
@@ -2421,6 +2425,6 @@ Private Sub UserForm_Terminate()
         
     Next colNo
     
-    settings.TurnOn
+    Settings.TurnOn
     
 End Sub

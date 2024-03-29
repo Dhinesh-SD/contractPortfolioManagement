@@ -172,11 +172,11 @@ End Sub
 
 Private Sub Btn_MovetoP1_Click()
 
-    Dim settings As New ExclClsSettings
+    Dim Settings As New ExclClsSettings
     'Turn off excel Functionality to speedup the procedure
-    settings.TurnOn
+    Settings.TurnOn
     
-    settings.TurnOff
+    Settings.TurnOff
     
     Dim i As Long
     Dim primeKey As String
@@ -252,7 +252,7 @@ Private Sub Btn_MovetoP1_Click()
     
     End With
     
-    settings.Restore
+    Settings.Restore
 
 End Sub
 
@@ -338,11 +338,11 @@ End Sub
 
 Private Sub Btn_SaveChanges_Click()
     
-    Dim settings As New ExclClsSettings
+    Dim Settings As New ExclClsSettings
     'Turn off excel Functionality to speedup the procedure
-    settings.TurnOn
+    Settings.TurnOn
     
-    settings.TurnOff
+    Settings.TurnOff
     
     Dim wb As Workbook
     Dim ws As Worksheet, ws2 As Worksheet
@@ -362,19 +362,19 @@ Private Sub Btn_SaveChanges_Click()
         
     MsgBox "Changes Updated!"
     
-    settings.Restore
+    Settings.Restore
     
     Exit Sub
     
 Handler:
     
-    settings.TurnOn
+    Settings.TurnOn
     
-    settings.TurnOff
+    Settings.TurnOff
     
     updateLog ThisWorkbook, Err.Number & ":" & Err.Description, "SaveChanges From Protfolio Management: Unsuccessful"
     
-    settings.Restore
+    Settings.Restore
 
 
 End Sub
@@ -566,7 +566,7 @@ Dim cntrl As Control
     
         .Top = Application.Top + Application.Height / 2 - .Height / 2
         
-        .Width = Application.Left + Application.Width / 2 - .Width / 2
+        .Left = Application.Left + Application.Width / 2 - .Width / 2
             
         .Field_7.RowSource = "'" & Sheet17.name & "'!$AM$4:$AM$20"
         

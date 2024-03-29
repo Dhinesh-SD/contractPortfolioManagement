@@ -83,11 +83,11 @@ End Sub
 
 Private Sub Btn_UpdateInfo_Click()
 
-    Dim settings As New ExclClsSettings
+    Dim Settings As New ExclClsSettings
     'Turn off excel Functionality to speedup the procedure
-    settings.TurnOn
+    Settings.TurnOn
     
-    settings.TurnOff
+    Settings.TurnOff
     
     Dim wb As Workbook, wb1 As Workbook
     
@@ -127,7 +127,7 @@ Private Sub Btn_UpdateInfo_Click()
         
         MsgBox ("Profile Currently in use! Edit after User Logs Out!")
         
-        settings.Restore
+        Settings.Restore
         
         Exit Sub
     
@@ -207,13 +207,13 @@ Private Sub Btn_UpdateInfo_Click()
     
     MsgBox "Changes Saved"
     
-    settings.Restore
+    Settings.Restore
     
     Exit Sub
     
 Handler:
 
-    settings.Restore
+    Settings.Restore
     
     updateLog ThisWorkbook, Err.Number & ":" & Err.Description, "Staff Mgmt Btn_AddNewStaff_Click(Delete Staff): Unsuccessful"
     
@@ -239,11 +239,11 @@ Private Sub Btn_AddNewStaff_MouseUp(ByVal Button As Integer, ByVal Shift As Inte
 End Sub
 
 Private Sub Btn_AddNewStaff_Click()
-    Dim settings As New ExclClsSettings
+    Dim Settings As New ExclClsSettings
     'Turn off excel Functionality to speedup the procedure
-    settings.TurnOn
+    Settings.TurnOn
     
-    settings.TurnOff
+    Settings.TurnOff
     
     Dim fileLocation As String
     Dim i As Long
@@ -266,27 +266,29 @@ Private Sub Btn_AddNewStaff_Click()
     
     unprotc ws
     
-    i = ws.ListObjects(1).ListRows.count + 2
+        i = ws.ListObjects(1).ListRows.count + 2
     
-    ws.Cells(i, 1).Value = i - 1
-    
-    ws.Cells(i, 2).Value = Me.Field_2.Value
-    
-    ws.Cells(i, 3).Value = Me.Field_3.Value
-    
-    ws.Cells(i, 4).Value = Me.Field_4.Caption
-    
-    ws.Cells(i, 5).Value = Me.Field_5.Value
-    
-    ws.Cells(i, 6).Value = Me.Field_6.Caption
-    
-    ws.Cells(i, 7).Value = Me.Field_7.Value
-    
-    ws.Cells(i, 8).Value = Me.Field_8.Value
-    
-    ws.Cells(i, 11).Value = "No"
-    
-    ws.Cells(i, 12).Value = ""
+        ws.Cells(i, 1).Value = i - 1
+        
+        ws.Cells(i, 2).Value = Me.Field_2.Value
+        
+        ws.Cells(i, 3).Value = Me.Field_3.Value
+        
+        ws.Cells(i, 4).Value = Me.Field_4.Caption
+        
+        ws.Cells(i, 5).Value = Me.Field_5.Value
+        
+        ws.Cells(i, 6).Value = Me.Field_6.Caption
+        
+        ws.Cells(i, 7).Value = Me.Field_7.Value
+        
+        ws.Cells(i, 8).Value = Me.Field_8.Value
+        
+        ws.Cells(i, 10).Value = "Loged_Out"
+        
+        ws.Cells(i, 11).Value = "No"
+        
+        ws.Cells(i, 12).Value = ""
     
     protc ws
     
@@ -309,7 +311,7 @@ Private Sub Btn_AddNewStaff_Click()
     
     Next sh
     
-    settings.Restore
+    Settings.Restore
     
     Me.TabStrip1.Value = 0
     
@@ -324,7 +326,7 @@ Handler:
     
     updateLog ThisWorkbook, Err.Number & ":" & Err.Description, "Staff Mgmt Btn_AddNewStaff_Click(Add New Staff): Unsuccessful"
 
-    settings.Restore
+    Settings.Restore
 
 End Sub
 
@@ -350,11 +352,11 @@ End Sub
 
 Private Sub Btn_DeleteStaff_Click()
 
-    Dim settings As New ExclClsSettings
+    Dim Settings As New ExclClsSettings
     
-    settings.TurnOn
+    Settings.TurnOn
     
-    settings.TurnOff
+    Settings.TurnOff
     
     
     Dim wb As Workbook, wb1 As Workbook
@@ -369,13 +371,13 @@ Private Sub Btn_DeleteStaff_Click()
     
     Dim ws As Worksheet, sh As Worksheet
     
-    Dim yesNo As String
+    Dim Yesno As String
     
-    yesNo = MsgBox("Do You Want to Delete " & Me.Field_4.Caption & "'s Profile?", vbYesNo, "Confirmation")
+    Yesno = MsgBox("Do You Want to Delete " & Me.Field_4.Caption & "'s Profile?", vbYesNo, "Confirmation")
     
-    If yesNo = vbNo Then
+    If Yesno = vbNo Then
     
-        settings.Restore
+        Settings.Restore
         
         Exit Sub
     
@@ -403,7 +405,7 @@ Private Sub Btn_DeleteStaff_Click()
                 
         MsgBox ("Profile Currently Logged_In! Cannot Delete Until User Logs Out!")
         
-        settings.Restore
+        Settings.Restore
         
         Exit Sub
     
@@ -456,13 +458,13 @@ unprotc ws
     openStaffMgmt
             
 
-settings.Restore
+Settings.Restore
 
 Exit Sub
 
 Handler:
 
-settings.Restore
+Settings.Restore
 
 updateLog ThisWorkbook, Err.Number & ":" & Err.Description, "Staff Mgmt Btn_AddNewStaff_Click(Delete Staff): Unsuccessful"
 
@@ -493,11 +495,11 @@ End Sub
 
 Private Sub ActBtn_ResetPassword_Click()
 
-    Dim settings As New ExclClsSettings
+    Dim Settings As New ExclClsSettings
     
-    settings.TurnOn
+    Settings.TurnOn
     
-    settings.TurnOff
+    Settings.TurnOff
     
     Dim wb As Workbook, wb1 As Workbook
     
@@ -530,7 +532,7 @@ Private Sub ActBtn_ResetPassword_Click()
                
         MsgBox ("Profile Currently in use! Cannot reset password Until User Logs Out!")
         
-        settings.Restore
+        Settings.Restore
         
         Exit Sub
     
@@ -550,7 +552,7 @@ Private Sub ActBtn_ResetPassword_Click()
         
         MsgBox "Password Successfuly Reset!"
         
-    settings.Restore
+    Settings.Restore
         
     Exit Sub
     
@@ -558,7 +560,7 @@ Handler:
     
     updateLog ThisWorkbook, Err.Number & ":" & Err.Description, "Staff Mgmt Btn_ResetPassword_Click(Reset Password Staff): Unsuccessful"
         
-    settings.Restore
+    Settings.Restore
 
 End Sub
 
@@ -780,6 +782,9 @@ End Sub
 Private Sub UserForm_Terminate()
 
     If Me.changesMade.Caption = "True" Then
+    
         ThisWorkbook.Save
+        
     End If
+    
 End Sub

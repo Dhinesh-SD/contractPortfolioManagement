@@ -17,16 +17,17 @@ Option Explicit
 Private Sub Btn_SignIn_Click()
     
    ' Dim Timer As New 'TimerCls
-    Dim settings As New ExclClsSettings
+    Dim Settings As New ExclClsSettings
     'Turn off excel Functionality to speedup the procedure
     'Timer.start
     
-    settings.TurnOn
+    Settings.TurnOn
         
-    settings.TurnOff
+    Settings.TurnOff
     
     'Timer.PrintTime "Turn-Off Settings"
     
+    SyncstaffData_FromGsheets "Mandatory"
     
     Dim i As Long
     Dim lrow As Long
@@ -34,7 +35,7 @@ Private Sub Btn_SignIn_Click()
     Dim position As String
     Dim Security As String
     Dim fileLocation As String
-    Dim Filename As String
+    Dim fileName As String
     Dim wb As Workbook
     Dim ws1 As Worksheet, ws2 As Worksheet, ws As Worksheet
     Dim HomePage As Worksheet
@@ -52,6 +53,7 @@ Private Sub Btn_SignIn_Click()
     'Timer.PrintTime "Update Staff Data Table"
     
     
+    
     Set HomePage = Sheet1
     
     Set ws1 = Sheet6
@@ -66,7 +68,7 @@ Private Sub Btn_SignIn_Click()
     
     End If
     
-    On Error GoTo Handler
+    'On Error GoTo Handler
     
     lrow = ws1.Range("A1").End(xlDown).row
     
@@ -128,7 +130,7 @@ Private Sub Btn_SignIn_Click()
             
             If LCase(Me.Label3.Caption) = "wrong password" Then
             
-                settings.Restore
+                Settings.Restore
                 
                 Exit Sub
                 
@@ -146,7 +148,7 @@ Private Sub Btn_SignIn_Click()
                 
                 protc
                 
-                settings.Restore
+                Settings.Restore
                 
                 Exit Sub
             
@@ -180,8 +182,13 @@ Private Sub Btn_SignIn_Click()
             
             For Each ws In ThisWorkbook.Worksheets
                 
-                If ws.Range("A1").Value = "Nav_To" And ws.name <> Sheet1.name Then ws.Range("A1").Value = "NavTo"
-            
+                If ws.Range("A1").Value = "Nav_To" And ws.name <> Sheet1.name Then
+                
+                    unprotc ws
+                    
+                    ws.Range("A1").Value = "NavTo"
+                    
+                End If
             Next ws
             
                             
@@ -209,7 +216,7 @@ Private Sub Btn_SignIn_Click()
         
         MsgBox "Login Failed:Profile Not found!", , "Login Error"
     
-        settings.Restore
+        Settings.Restore
         
         'Timer.PrintTime " LoginFailed"
         
@@ -219,7 +226,7 @@ Private Sub Btn_SignIn_Click()
     
     Dim rng As Range, srcRng As Range
     
-    Sheet1.Shapes("Info_ProfileName").TextFrame.Characters.Text = Range("pName").Value
+    renameShapes
     
     Sheet14.Range("A1").CurrentRegion.Offset(1).Clear
     
@@ -237,7 +244,7 @@ Private Sub Btn_SignIn_Click()
         
         rng.AdvancedFilter xlFilterCopy, srcRng, drng
         
-        Sheet14.ListObjects(1).Resize (Range("A1").CurrentRegion)
+        Sheet14.ListObjects(1).Resize Range("A1").CurrentRegion
      End If
         
     protectWorksheet
@@ -259,7 +266,7 @@ Private Sub Btn_SignIn_Click()
     
     Unload Me
     
-    settings.Restore
+    Settings.Restore
     
     'Timer.PrintTime "Restore Settings"
     
@@ -268,15 +275,17 @@ Private Sub Btn_SignIn_Click()
 Handler:
 
     'Turn off excel Functionality to speedup the procedure
-    settings.TurnOn
+    Settings.TurnOn
     
-    settings.TurnOff
-
+    Settings.TurnOff
+    
+    emergencySignOut
+    
         updateLog ThisWorkbook, Err.Number & ":" & Err.Description, "SignIn Btn_SignIn_Click: Unsuccessful"
             
         Unload Me
     
-    settings.Restore
+    Settings.Restore
 
 End Sub
 
@@ -332,7 +341,7 @@ Dim cntrl As Control
     
         .Top = Application.Top + Application.Height / 2 - .Height / 2
         
-        .Width = Application.Left + Application.Width / 2 - .Width / 2
+        .Left = Application.Left + Application.Width / 2 - .Width / 2
     
     End With
     
