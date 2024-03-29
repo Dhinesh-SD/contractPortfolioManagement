@@ -16,6 +16,7 @@ Public Declare PtrSafe Sub Sleep Lib "kernel32" (ByVal dwMilliseconds As LongPtr
 'https://docs.google.com/forms/d/e/1FAIpQLSchv13R2idfDyl_4PA0G76q_G4JLBn3rzghn3ttp3LjrvGXXg/viewform?usp=pp_url
 'PCO_5
 'https://docs.google.com/forms/d/e/1FAIpQLSceZtykKSeGb5KRRHlYneP7-eynkk81UyeCQJ_KWMP_CCY2qg/viewform?usp=pp_url
+
 Sub syncData()
 
     Dim http As Object, http2 As Object
@@ -55,23 +56,23 @@ Sub syncData()
         
         URL = "https://docs.google.com/forms/d/e/1FAIpQLSceZtykKSeGb5KRRHlYneP7-eynkk81UyeCQJ_KWMP_CCY2qg/formResponse?"
         
-    ElseIf position = "PCO-1" Then
+    ElseIf position = "PCO_1" Then
         
         URL = "https://docs.google.com/forms/d/e/1FAIpQLSf-l4djrWGInh_7OSqV2RbsaSNegkHWfgDKyDVeC-h5qzfxxg/formResponse?"
         
-    ElseIf position = "PCO-2" Then
+    ElseIf position = "PCO_2" Then
     
         URL = "https://docs.google.com/forms/d/e/1FAIpQLSeWLOiaXCyzMUYMwSiYy5c4bDg9Yw3zLtkXejK1eMX8xCDoiQ/formResponse?"
         
-    ElseIf position = "PCO-3" Then
+    ElseIf position = "PCO_3" Then
     
         URL = "https://docs.google.com/forms/d/e/1FAIpQLSeDj68Z76D_aNyi-SgWm1SntAt-OoMg0Z0EHNDNKRl8HG9nCA/formResponse?"
 
-    ElseIf position = "PCO-4" Then
+    ElseIf position = "PCO_4" Then
     
         URL = "https://docs.google.com/forms/d/e/1FAIpQLSchv13R2idfDyl_4PA0G76q_G4JLBn3rzghn3ttp3LjrvGXXg/formResponse?"
 
-    ElseIf position = "PCO-5" Then
+    ElseIf position = "PCO_5" Then
     
         URL = "https://docs.google.com/forms/d/e/1FAIpQLSceZtykKSeGb5KRRHlYneP7-eynkk81UyeCQJ_KWMP_CCY2qg/formResponse?"
     
@@ -189,16 +190,8 @@ Sub syncData()
     
     strData = strData & "&entry.835752841=No"
     
-    'strData = Replace(strData, "% ", "No.")
-    
-        'Debug.Print i, ContractNumber
         finalURL = URL & strData
-        'finalBackupURL = backupURL & strData
         http.Open "POST", finalURL, False
-        
-        'http2.Open "POST", finalBackupURL, False
-        
-        'http2.send
         http.send
         
         'Debug.Print http.statusText
@@ -241,6 +234,88 @@ Call deleteRows
 'MsgBox "Data Synced!"
     
 End Sub
+
+'https://docs.google.com/forms/d/e/1FAIpQLScTAHadBV2XACHy4VONqslb_XKAI-X2WTbtAA52yG-g53I8lQ/viewform?usp=pp_url
+'&entry.1979109053=
+'&entry.905411940=
+'&entry.118155789=
+'&entry.472882986=
+'&entry.428157477=
+'&entry.633347499=
+'&entry.1389789672=
+'&entry.876086190=
+
+Sub syncFieldAccess()
+
+    Dim http As Object
+    Dim URL As String
+    Dim pk_id As Long, syncStatus As String
+    
+    Dim i As Long
+    Dim strData As String
+    Dim finalURL As String
+    Dim ws As Worksheet
+    Dim FormFieldId() As String
+    Dim values() As Variant
+    Dim fieldIds As String
+    
+    Set http = CreateObject("MSXML2.serverXMLHTTP")
+    
+    fieldIds = "&entry.1979109053=,&entry.905411940=,&entry.118155789=,&entry.472882986=,&entry.428157477=,&entry.633347499=,&entry.1389789672=,&entry.876086190="
+    
+    FormFieldId = Split(fieldIds, ",")
+    
+    ReDim values(1 To 10)
+    
+    Dim id As Integer, fieldNames As String, fieldId As String, UserNormEnabled As String
+    Dim contrFinalEnalbled As Long, adminEnabled As Long
+    
+    Set ws = Sheet7
+    
+    URL = "https://docs.google.com/forms/d/e/1FAIpQLScTAHadBV2XACHy4VONqslb_XKAI-X2WTbtAA52yG-g53I8lQ/formResponse?"
+    
+    For i = 2 To ws.Range("A1").End(xlDown).row
+    
+        syncStatus = ws.Cells(i, "H").Value
+        
+        If syncStatus = "" Then
+        
+        For j = LBound(FormFieldId) To UBound(FormFieldId)
+            
+            If j = 0 Then
+                
+                strData = FormFieldId(j) & ws.Cells(i, j + 1).Value
+            
+            Else
+            
+            ReDim Preserve values(1 To UBound(values) + 1)
+            
+                strData = strData & FormFieldId(j) & ws.Cells(i, j + 1).Value
+            
+            End If
+            
+        Next j
+        
+        finalURL = URL & strData & "No"
+        http.Open "POST", finalURL, False
+        http.send
+        
+        If http.statusText = "OK" Then
+        
+            ws.Cells(i, "H").Value = "Synced"
+        Else
+        
+        Debug.Print finalURL
+        
+        End If
+               
+        End If
+        
+    Next i
+    
+End Sub
+
+
 
 Function deleteRows()
 

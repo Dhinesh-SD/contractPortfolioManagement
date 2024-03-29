@@ -1,12 +1,12 @@
 Attribute VB_Name = "StaffMgmtCodes"
 
 Sub openStaffMgmt()
-    Dim settings As New ExclClsSettings
+    Dim Settings As New ExclClsSettings
     
     'Turn off excel Functionality to speedup the procedure
-    settings.TurnOn
+    Settings.TurnOn
     
-    settings.TurnOff
+    Settings.TurnOff
 
     SyncstaffData_FromGsheets
     
@@ -14,7 +14,7 @@ Sub openStaffMgmt()
         
         .ColumnCount = 10
         
-        .ColumnWidths = "50;60;60;100;120;85;50;40;1;50"
+        .ColumnWidths = "50;60;60;100;120;85;50;40;0;50"
         
         .RowSource = "StaffData!" & Sheet6.Range("A2:J" & Sheet6.Range("A1").End(xlDown).row).Address
         
@@ -36,19 +36,19 @@ Sub openStaffMgmt()
     
     If StaffMgmt.Visible = False Then StaffMgmt.Show vbModeless
     
-    settings.Restore
+    Settings.Restore
     
 End Sub
 
 
 Sub FilterPCO()
 
-    Dim settings As New ExclClsSettings
+    Dim Settings As New ExclClsSettings
     
     'Turn off excel Functionality to speedup the procedure
-    settings.TurnOn
+    Settings.TurnOn
     
-    settings.TurnOff
+    Settings.TurnOff
 
     Dim ws As Worksheet, resultsheet As Worksheet
     
@@ -105,34 +105,34 @@ Sub FilterPCO()
     
     Next a
     
-    settings.Restore
+    Settings.Restore
     
     Exit Sub
     
 Handler:
     
     'Turn off excel Functionality to speedup the procedure
-    settings.TurnOn
+    Settings.TurnOn
     
-    settings.TurnOff
+    Settings.TurnOff
     
     updateLog ThisWorkbook, Err.Number & ":" & Err.Description, "FilterPCO"
     
     MsgBox "error occourred Check Update table for error information"
 
-    settings.Restore
+    Settings.Restore
 End Sub
 
 
 
 Sub openPortfolioMgmt()
 
-    Dim settings As New ExclClsSettings
+    Dim Settings As New ExclClsSettings
     
     'Turn off excel Functionality to speedup the procedure
-    settings.TurnOn
+    Settings.TurnOn
     
-    settings.TurnOff
+    Settings.TurnOff
     
     'ThisWorkbook.Worksheets("MyContractsTable").ListObjects(1).QueryTable.Refresh BackgroundQuery:=False
     
@@ -186,6 +186,6 @@ Sub openPortfolioMgmt()
     
     End With
     
-    settings.Restore
+    Settings.Restore
     
 End Sub

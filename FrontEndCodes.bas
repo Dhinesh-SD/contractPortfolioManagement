@@ -8,19 +8,43 @@ and column widths, hides specific rows, unlocks certain cells, and sets up a nam
 'The code also adds a background picture to the worksheet and turns off the display of gridlines. _
 It restores the default Excel settings upon completion.
 
+Sub renameShapes()
+    
+    Dim sh As Worksheet
+    
+    unProtectWorksheet
+    On Error Resume Next
+    For Each sh In ThisWorkbook.Worksheets
+            
+        If InStr(1, sh.Range("A1").Value, "Nav", vbTextCompare) > 0 Then
+            
+            sh.Shapes("Info_profileName").TextFrame.Characters.Text = Sheet12.Range("pName").Value
+            
+            sh.Shapes("Heading_AppName").TextFrame.Characters.Text = Replace(ThisWorkbook.name, ".xlsm", "")
+        
+        End If
+        
+    Next sh
+    
+    protectWorksheet
+
+End Sub
+
 Sub PageDesign(ws As Worksheet)
-    Dim settings As New ExclClsSettings
+    Dim Settings As New ExclClsSettings
     'Turn off excel Functionality to speedup the procedure
-    settings.TurnOn
-    settings.TurnOff
+    Settings.TurnOn
+    Settings.TurnOff
     
     unprotc ws
     
     Dim i As Long
     
     'Sheet1.Range("A:C").Merge
+    On Error Resume Next
     
     For i = 1 To 12 Step 2
+        
         
         ws.Range("A" & i & ":C" & i + 1).Merge
     
@@ -60,7 +84,7 @@ Sub PageDesign(ws As Worksheet)
     
     protc ws
     
-    settings.Restore
+    Settings.Restore
 
 End Sub
 
@@ -77,36 +101,23 @@ Sub Theme()
     'Debug.print Sheet21.Shapes("Button").Fill.GradientColorType
     
     unprotc
-    
+    On Error Resume Next
     For Each shp In ActiveSheet.Shapes
         
-        If Left(shp.name, 3) = "Btn" Then
+        
+                
+        If InStr(1, shp.name, "Active", vbTextCompare) > 0 Then
             
+            Sheet21.Shapes("ActiveButton").PickUp
+
+            shp.Apply
+        
+        ElseIf Left(shp.name, 3) = "Btn" Then
+                
             Sheet21.Shapes("Button").PickUp
             
             shp.Apply
-        
-        End If
-        
-        If shp.name = "Navigation" Then
-            
-            For Each sh In shp.GroupItems
-                
-                If Right(sh.name, 6) = "Active" Then
-                    
-                    Sheet21.Shapes("ActiveButton").PickUp
-                    
-                    sh.Apply
-                
-                Else
-                    
-                    Sheet21.Shapes("Button").PickUp
-                    
-                    sh.Apply
-                
-                End If
-            
-            Next sh
+
         
         End If
         
@@ -157,31 +168,21 @@ End Sub
 
 Sub ApplyfrontEnd()
 
-    Dim settings As New ExclClsSettings
+    Dim Settings As New ExclClsSettings
     'Turn off excel Functionality to speedup the procedure
     Dim Timer As New TimerCls
     
-    'Timer.start
+    Settings.TurnOn
     
-    settings.TurnOn
-    
-    settings.TurnOff
+    Settings.TurnOff
 
-    PageDesign ActiveSheet
+        PageDesign ActiveSheet
+        
+        AddShapes ActiveSheet
+        
+        Theme
     
-    'Timer.PrintTime "Page Design"
-
-    AddShapes ActiveSheet
-    
-    'Timer.PrintTime "Add Shapes"
-
-    Theme
-    
-    'Timer.PrintTime "Add Theme"
-    
-    'Navto Sheets(ActiveSheet.Index + 1)
-    
-    settings.Restore
+    Settings.Restore
 
 End Sub
 
@@ -191,12 +192,22 @@ Sub AddShapes(newSheet As Worksheet)
     Dim ws As Worksheet
     Dim rng As Range
     Dim PageName As Shape, applicationName As Shape, rootDir As Shape, browseFolder As Shape
-    Dim lft As Double, tp As Double, wdth As Double, hight As Double
+    Dim lft As Double, tp As Double, wdth As Double, hight As Double, shp As Shape
 
     'Set the worksheet object
     Set ws = newSheet
     
     unprotc ws
+    
+    For Each shp In ws.Shapes
+    
+        If Left(shp.name, 3) = "Btn" Then
+        
+            shp.Delete
+        
+        End If
+    
+    Next shp
     
     On Error Resume Next
     
@@ -229,7 +240,7 @@ Sub AddShapes(newSheet As Worksheet)
         
         applicationName.TextFrame.HorizontalAlignment = xlHAlignLeft
         
-        applicationName.TextFrame.Characters.Font.Size = 14
+
         
         applicationName.TextFrame.Characters.Font.Bold = True
         
@@ -265,13 +276,13 @@ Sub AddShapes(newSheet As Worksheet)
         
         navShape.TextFrame.HorizontalAlignment = xlHAlignLeft
         
-        navShape.TextFrame.Characters.Font.Size = 12
+
         
         navShape.Line.Visible = msoFalse
         
         navShape.TextFrame.Characters.Text = "Navigation Menu"
         
-    'Navigation
+        'Navigation
         Dim pageShape As Shape, pageShapeGroup As Shape, count As Integer
         
         Dim groups() As String, grp As String
@@ -286,9 +297,9 @@ Sub AddShapes(newSheet As Worksheet)
         
         hight = navShape.Height
         'Delete
-        ws.Shapes("Navigation").Delete
+
         
-        ws.Shapes("Btn_Active").Delete
+        
         'Create
          For Each pg In ThisWorkbook.Worksheets
              
@@ -301,7 +312,7 @@ Sub AddShapes(newSheet As Worksheet)
                      pageShape.name = "Btn_Active"
                  
                  Else
-                     
+
                      pageShape.name = "Btn_" & (LCase(Trim(Replace(pg.name, " ", ""))))
                  
                  End If
@@ -310,7 +321,7 @@ Sub AddShapes(newSheet As Worksheet)
                  
                  pageShape.TextFrame.HorizontalAlignment = xlHAlignLeft
                  
-                 pageShape.TextFrame.Characters.Font.Size = 12
+
                  
                  pageShape.Line.Visible = msoFalse
                  
@@ -327,11 +338,12 @@ Sub AddShapes(newSheet As Worksheet)
                  Set pageShape = ws.Shapes.AddShape(msoShapeRound2DiagRectangle, lft, tp + _
                                      hight * count, wdth, hight)
                  If pg.name = ws.name Then
-                     
+                 
+
                      pageShape.name = "Btn_Active"
                  
                  Else
-                     
+
                      pageShape.name = "Btn_" & (LCase(Trim(Replace(pg.name, " ", ""))))
                  
                  End If
@@ -340,7 +352,7 @@ Sub AddShapes(newSheet As Worksheet)
                  
                  pageShape.TextFrame.HorizontalAlignment = xlHAlignLeft
                  
-                 pageShape.TextFrame.Characters.Font.Size = 12
+
                  
                  pageShape.Line.Visible = msoFalse
                  
@@ -348,7 +360,7 @@ Sub AddShapes(newSheet As Worksheet)
                  
                  pageShape.OnAction = "navtoSheet" 'Replace(pg.Name, " ", "_")
                  
-                 pageShape.Select Replace:=False
+                 'pageShape.Select Replace:=False
                  
                  count = count + 1
     
@@ -357,11 +369,11 @@ Sub AddShapes(newSheet As Worksheet)
                  Set pageShape = ws.Shapes.AddShape(msoShapeRound2DiagRectangle, lft, tp + _
                                      hight * count, wdth, hight)
                  If pg.name = ws.name Then
-                     
+
                      pageShape.name = "Btn_Active"
                  
                  Else
-                     
+
                      pageShape.name = "Btn_" & (LCase(Trim(Replace(pg.name, " ", ""))))
                  
                  End If
@@ -370,7 +382,7 @@ Sub AddShapes(newSheet As Worksheet)
                  
                  pageShape.TextFrame.HorizontalAlignment = xlHAlignLeft
                  
-                 pageShape.TextFrame.Characters.Font.Size = 12
+
                  
                  pageShape.Line.Visible = msoFalse
                  
@@ -378,15 +390,13 @@ Sub AddShapes(newSheet As Worksheet)
                  
                  pageShape.OnAction = "" 'Replace(pg.Name, " ", "_")
                  
-                 pageShape.Select Replace:=False
+                 'pageShape.Select Replace:=False
                  
                  count = count + 1
              
              End If
              
          Next pg
-        
-        Selection.group.name = "Navigation"
         
         ws.Range("D3").Select
         
@@ -396,47 +406,32 @@ Sub AddShapes(newSheet As Worksheet)
     
     'Sign-In
         Dim SignIn As Shape
-                
+        
         Set rng = ws.Range("D3:D4")
-        
         lft = navShape.Width
-        
         tp = rng.Top
-        
         wdth = rng.Width
-        
         hight = rng.Height
         
-        'Delete
-        ws.Shapes("Btn_SignInOut").Delete
-        
-        'Create
+    'Create
         Set SignIn = ws.Shapes.AddShape(msoShapeRound2DiagRectangle, lft, tp, wdth, hight)
-        
         SignIn.name = "Btn_SignInOut"
         
-        'Edit
+    'Edit
         
         SignIn.TextFrame.VerticalAlignment = xlVAlignCenter
-        
         SignIn.TextFrame.HorizontalAlignment = xlHAlignCenter
-        
-        SignIn.TextFrame.Characters.Font.Size = 12
-        
+
         SignIn.Line.Visible = msoFalse
-        
-        SignIn.TextFrame.Characters.Text = "Navigation Menu"
         
         If Sheet12.Range("pName").Value = "" Then
             
             SignIn.TextFrame.Characters.Text = "Sign In"
-            
             SignIn.OnAction = "SignInCode"
         
         Else
             
             SignIn.TextFrame.Characters.Text = "Sign Out"
-            
             SignIn.OnAction = "SignOutCode"
         
         End If
@@ -446,41 +441,27 @@ Sub AddShapes(newSheet As Worksheet)
         Dim StaffMgmt As Shape
         
         Set rng = Sheet1.Range("E3:E4")
-        
         lft = SignIn.Left + SignIn.Width
-        
         tp = rng.Top
-        
         wdth = rng.Width
-        
         hight = rng.Height
         
-        'Delete
-        
-        ws.Shapes("Btn_StaffMgmt").Delete
-        
-        'Create
+    'Create
         
         Set StaffMgmt = ws.Shapes.AddShape(msoShapeRound2DiagRectangle, lft, tp, wdth, hight)
-        
         StaffMgmt.name = "Btn_StaffMgmt"
         
-        'edit
+    'edit
         
         StaffMgmt.TextFrame.VerticalAlignment = xlVAlignCenter
-        
         StaffMgmt.TextFrame.HorizontalAlignment = xlHAlignCenter
-        
-        StaffMgmt.TextFrame.Characters.Font.Size = 12
-        
+
         StaffMgmt.Line.Visible = msoFalse
-        
         StaffMgmt.TextFrame.Characters.Text = "Staff Management"
         
         If Range("Security").Value = "Admin" Then
             
             StaffMgmt.Visible = msoCTrue
-            
             StaffMgmt.OnAction = "openStaffMgmt"
         
         Else
@@ -494,32 +475,23 @@ Sub AddShapes(newSheet As Worksheet)
         Dim portfolioManagement As Shape
         
         Set rng = Sheet1.Range("E3:E4")
-        
         lft = StaffMgmt.Left + StaffMgmt.Width
-        
         tp = rng.Top
-        
         wdth = rng.Width
-        
         hight = rng.Height
-        
-        'Delete
-        
-        ws.Shapes("Btn_PortfMgmt").Delete
-        
-        'Create
+
+    'Create
         
         Set portfolioManagement = ws.Shapes.AddShape(msoShapeRound2DiagRectangle, lft, tp, wdth, hight)
-        
         portfolioManagement.name = "Btn_PortfMgmt"
         
-        'edit
+    'edit
         
         portfolioManagement.TextFrame.VerticalAlignment = xlVAlignCenter
         
         portfolioManagement.TextFrame.HorizontalAlignment = xlHAlignCenter
         
-        portfolioManagement.TextFrame.Characters.Font.Size = 12
+
         
         portfolioManagement.Line.Visible = msoFalse
         
@@ -534,6 +506,54 @@ Sub AddShapes(newSheet As Worksheet)
         Else
             
             portfolioManagement.Visible = False
+        
+        End If
+    
+    'Contracts Field Management
+    
+        Dim fieldAccess As Shape
+        
+        Set rng = Sheet1.Range("E3:E4")
+        
+        lft = portfolioManagement.Left + portfolioManagement.Width
+        
+        tp = rng.Top
+        
+        wdth = rng.Width
+        
+        hight = rng.Height
+        
+        'Delete
+        
+
+        
+        'Create
+        
+        Set fieldAccess = ws.Shapes.AddShape(msoShapeRound2DiagRectangle, lft, tp, wdth, hight)
+        
+        fieldAccess.name = "Btn_FieldAccess"
+        
+        'edit
+        
+        fieldAccess.TextFrame.VerticalAlignment = xlVAlignCenter
+        
+        fieldAccess.TextFrame.HorizontalAlignment = xlHAlignCenter
+        
+
+        
+        fieldAccess.Line.Visible = msoFalse
+        
+        fieldAccess.TextFrame.Characters.Text = "Fields Management"
+        
+        If Range("Security").Value = "Admin" Then
+            
+            fieldAccess.Visible = msoCTrue
+            
+            fieldAccess.OnAction = "fieldsManagement"
+        
+        Else
+            
+            fieldAccess.Visible = False
         
         End If
         
@@ -569,7 +589,7 @@ Sub AddShapes(newSheet As Worksheet)
         
         PageName.TextFrame.HorizontalAlignment = xlHAlignLeft
         
-        PageName.TextFrame.Characters.Font.Size = 14
+
         
         PageName.TextFrame.Characters.Font.Bold = True
         
@@ -608,13 +628,13 @@ Sub AddShapes(newSheet As Worksheet)
         
         profileNm.TextFrame.HorizontalAlignment = xlHAlignLeft
         
-        profileNm.TextFrame.Characters.Font.Size = 12
+
         
         profileNm.TextFrame.Characters.Text = Range("pName").Value
         
         'profileNm.Visible = msoTrue
                 
-    If ws.name <> Sheet1.name And ws.name <> Sheet7.name Then
+    If ws.name <> Sheet1.name Then
     
     'Apply Filter
         Dim ApplyFilter As Shape
@@ -631,7 +651,7 @@ Sub AddShapes(newSheet As Worksheet)
         
         'Delete
          
-         ws.Shapes("Btn_Filters").Delete
+
          'Create
         
         Set ApplyFilter = ws.Shapes.AddShape(msoShapeRound2DiagRectangle, lft, tp, wdth, hight)
@@ -646,7 +666,7 @@ Sub AddShapes(newSheet As Worksheet)
         
         ApplyFilter.TextFrame.HorizontalAlignment = xlHAlignLeft
         
-        ApplyFilter.TextFrame.Characters.Font.Size = 12
+
         
         ApplyFilter.TextFrame.Characters.Text = "Apply Filters"
         
@@ -668,7 +688,7 @@ Sub AddShapes(newSheet As Worksheet)
         
         'Delete
          
-         ws.Shapes("Btn_clrFilters").Delete
+
          
          'Create
         
@@ -684,7 +704,7 @@ Sub AddShapes(newSheet As Worksheet)
         
         ClrFilters.TextFrame.HorizontalAlignment = xlHAlignLeft
         
-        ClrFilters.TextFrame.Characters.Font.Size = 12
+
         
         ClrFilters.TextFrame.Characters.Text = "Clear Filters"
         
@@ -706,7 +726,7 @@ Sub AddShapes(newSheet As Worksheet)
         
         'Delete
          
-         ws.Shapes("Btn_editContr").Delete
+
          
          'Create
         
@@ -722,7 +742,7 @@ Sub AddShapes(newSheet As Worksheet)
         
         editContr.TextFrame.HorizontalAlignment = xlHAlignLeft
         
-        editContr.TextFrame.Characters.Font.Size = 12
+
         
         editContr.TextFrame.Characters.Text = "Edit Contract"
         
@@ -744,7 +764,7 @@ Sub AddShapes(newSheet As Worksheet)
         
         'Delete
          
-         ws.Shapes("Btn_newContr").Delete
+
          
          'Create
         
@@ -760,11 +780,50 @@ Sub AddShapes(newSheet As Worksheet)
         
         newContract.TextFrame.HorizontalAlignment = xlHAlignLeft
         
-        newContract.TextFrame.Characters.Font.Size = 12
+
         
         newContract.TextFrame.Characters.Text = "Add New Contract"
         
         newContract.OnAction = "addNewContract"
+    
+    
+    'CreateReport
+        
+        Dim CreateReport As Shape
+        
+        Set rng = ws.Range("J9:J10")
+        
+        lft = newContract.Left + newContract.Width
+        
+        tp = rng.Top
+        
+        wdth = newContract.Width
+        
+        hight = rng.Height
+        
+        'Delete
+         
+
+         
+         'Create
+        
+        Set CreateReport = ws.Shapes.AddShape(msoShapeRound2DiagRectangle, lft, tp, wdth, hight)
+        
+        CreateReport.name = "Btn_CreateReport"
+        
+        'Edit
+        
+        CreateReport.Line.Visible = msoFalse
+        
+        CreateReport.TextFrame.VerticalAlignment = xlVAlignCenter
+        
+        CreateReport.TextFrame.HorizontalAlignment = xlHAlignLeft
+        
+
+        
+        CreateReport.TextFrame.Characters.Text = "Create Report"
+        
+        CreateReport.OnAction = "CreateReport"
     
     
     'SearchPage
@@ -773,17 +832,17 @@ Sub AddShapes(newSheet As Worksheet)
         
         Set rng = ws.Range("J9:J10")
         
-        lft = newContract.Left + newContract.Width
+        lft = CreateReport.Left + CreateReport.Width
         
         tp = rng.Top
         
-        wdth = rng.Width
+        wdth = CreateReport.Width
         
         hight = rng.Height
         
         'Delete
          
-         ws.Shapes("Btn_SearchPage").Delete
+
          
          'Create
         
@@ -799,11 +858,48 @@ Sub AddShapes(newSheet As Worksheet)
         
         SearchPage.TextFrame.HorizontalAlignment = xlHAlignLeft
         
-        SearchPage.TextFrame.Characters.Font.Size = 12
+
         
         SearchPage.TextFrame.Characters.Text = "Search Page"
         
         SearchPage.OnAction = "FindCode"
+    
+    Else
+    
+        Dim RefreshDashboard As Shape
+        
+        Set rng = ws.Range("F9:F10")
+        
+        lft = PageName.Left + PageName.Width
+        
+        tp = rng.Top
+        
+        wdth = rng.Width
+        
+        hight = rng.Height
+        
+        'Delete
+         
+
+         'Create
+        
+        Set RefreshDashboard = ws.Shapes.AddShape(msoShapeRound2DiagRectangle, lft, tp, wdth, hight)
+        
+        RefreshDashboard.name = "Btn_RefDash"
+        
+        'Edit
+        
+        RefreshDashboard.Line.Visible = msoFalse
+        
+        RefreshDashboard.TextFrame.VerticalAlignment = xlVAlignCenter
+        
+        RefreshDashboard.TextFrame.HorizontalAlignment = xlHAlignLeft
+        
+
+        
+        RefreshDashboard.TextFrame.Characters.Text = "Refresh Dashboard"
+        
+        RefreshDashboard.OnAction = "RefDashboard"
     
     End If
     
@@ -826,7 +922,7 @@ Sub AddShapes(newSheet As Worksheet)
         
         'Delete
          
-         ws.Shapes("Btn_RefPage").Delete
+
          
          'Create
         
@@ -842,16 +938,28 @@ Sub AddShapes(newSheet As Worksheet)
         
         RefreshPage.TextFrame.HorizontalAlignment = xlHAlignLeft
         
-        RefreshPage.TextFrame.Characters.Font.Size = 12
-        
         RefreshPage.TextFrame.Characters.Text = "Refresh All Data"
-        
+            
         RefreshPage.OnAction = "refreshAllContracts"
     
     End If
     
-    protc ws
+    For Each shp In ws.Shapes
+    
+        If Left(shp.name, 3) = "Btn" Then
 
-
+            shp.Placement = xlFreeFloating
+            
+        End If
+        
+    Next shp
+ protc ws
+ 
 End Sub
 
+Sub textSize(ws As Worksheet)
+
+Dim shp As Shape
+unprotc ws
+protc ws
+End Sub
